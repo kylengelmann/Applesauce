@@ -1,6 +1,5 @@
 # Visual Studio 2015 user specific files
 root/Applesauce/.vs/
-root/ue4/.vs/
 
 # Compiled Object files
 *.slo
@@ -24,16 +23,11 @@ root/ue4/.vs/
 
 # Builds
 root/Applesauce/Build/*
-root/ue4/Engine/Build/*
 
 # Whitelist PakBlacklist-<BuildConfiguration>.txt files
 !root/Applesauce/Build/*/
 root/Applesauce/Build/*/**
 !root/Applesauce/Build/*/PakBlacklist*.txt
-
-!root/ue4/Engine/Build/*/
-root/ue4/Engine/Build/*/**
-!root/ue4/Engine/Build/*/PakBlacklist*.txt
 
 # Don't ignore icon files in Build
 !root/Applesauce/Build/**/*.ico
@@ -46,9 +40,7 @@ root/Applesauce/Saved/*
 
 # Compiled source files for the engine to use
 root/Applesauce/Intermediate/*
-root/ue4/Engine/Intermediate/*
 root/Applesauce/Plugins/*/Intermediate/*
-root/ue4/Engine/Plugins/*/Intermediate/*
 
-# Cache files for the editor to use
-root/ue4/Engine/DerivedDataCache/*
+
+!root/ue4/Engine/Saved/UnrealBuildTool/*
