@@ -1,0 +1,16 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{363693F8-4142-45C4-2644-0BAD9C1211AF}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "PeachCobbler",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
+		}
+	]
+}
