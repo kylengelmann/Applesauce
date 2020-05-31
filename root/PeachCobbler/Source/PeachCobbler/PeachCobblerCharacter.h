@@ -4,10 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "AbilitySystemInterface.h"
 #include "PeachCobblerCharacter.generated.h"
 
+class UAbilitySystemComponent;
+
 UCLASS(config=Game)
-class APeachCobblerCharacter : public ACharacter
+class APeachCobblerCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -18,6 +21,7 @@ class APeachCobblerCharacter : public ACharacter
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
+
 public:
 	APeachCobblerCharacter();
 
@@ -28,6 +32,8 @@ public:
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
+
+	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const override;
 
 protected:
 
@@ -58,6 +64,23 @@ protected:
 	/** Handler for when a touch input stops. */
 	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
 
+	/** Class to spawn when creating a throw rock */
+	UPROPERTY(EditDefaultsOnly, Category = "Throw Rock")
+	TSubclassOf<AActor> ThrowRockClass;
+
+	/** Spawn a throw rock */
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	void ServerSpawnThrowRock();
+
+private:
+	/** Ability System Component */
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category="Gameplay Ability System", meta = (AllowPrivateAccess = "true"))
+	UAbilitySystemComponent* AbilitySystemComponent;
+
+	/** Transform at which the throw rock will spawn */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Throw Rock", meta = (AllowPrivateAccess = "true"))
+	class USceneComponent* ThrowRockSpawn;
+
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -68,5 +91,14 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+public:
+
+	/** IAbilitySystemInterface GetAbilitySystemComponent: returns this actor's ability system component */
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const { return AbilitySystemComponent; }
+
+	virtual void PossessedBy(AController* NewController) override;
+
+	//virtual void OnRep_Controller() override;
 };
 

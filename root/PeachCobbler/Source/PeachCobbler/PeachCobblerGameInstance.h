@@ -16,6 +16,8 @@ class PEACHCOBBLER_API UPeachCobblerGameInstance : public UGameInstance
 
 public:
 
+	/** Init AbilitySystemGlobals */
+	virtual void Init() override;
 protected:
 
 	UFUNCTION(BlueprintCallable)

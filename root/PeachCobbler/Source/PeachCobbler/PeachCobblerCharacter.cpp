@@ -8,6 +8,9 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "AbilitySystemComponent.h"
+#include "Net/UnrealNetwork.h"
+#include "Components/SceneComponent.h"
 
 //////////////////////////////////////////////////////////////////////////
 // APeachCobblerCharacter
@@ -45,6 +48,16 @@ APeachCobblerCharacter::APeachCobblerCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+
+	ThrowRockSpawn = CreateDefaultSubobject<USceneComponent>(TEXT("ThrowRockSpawn"));
+	ThrowRockSpawn->SetupAttachment(RootComponent);
+}
+
+void APeachCobblerCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(APeachCobblerCharacter, AbilitySystemComponent);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -130,5 +143,32 @@ void APeachCobblerCharacter::MoveRight(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
+	}
+}
+
+void APeachCobblerCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	AbilitySystemComponent = NewObject<UAbilitySystemComponent>(this, UAbilitySystemComponent::StaticClass(), TEXT("AbilitySystemComponent"));
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->RegisterComponent();
+	}
+}
+
+void APeachCobblerCharacter::ServerSpawnThrowRock()
+{
+	if (GetLocalRole() != ROLE_Authority || !ThrowRockSpawn || !ThrowRockClass.Get())
+	{
+		return;
+	}
+
+	if (UWorld* World = GetWorld())
+	{
+		if (AActor* ThrowRock = World->SpawnActor<AActor>(ThrowRockClass, ThrowRockSpawn->GetComponentTransform()))
+		{
+			ThrowRock->SetOwner(this);
+		}
 	}
 }
